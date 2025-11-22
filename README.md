@@ -1,181 +1,102 @@
-# Sistema de Recomendación de Autos 2025 - México
+// ...existing code...
+## 📝 Licencia
 
-Sistema de recomendación de automóviles basado en **Clean Architecture** que sugiere 3 vehículos modelo 2025 vendidos en México según la profesión, personalidad y hobby del usuario.
+ISC
 
-## 🏗️ Arquitectura Limpia (Clean Architecture)
+<!-- Añadido: instrucciones de descarga, puesta en marcha y despliegue -->
+## ⬇️ Cómo descargar este repositorio
 
-El proyecto sigue los principios de Clean Architecture con separación clara de responsabilidades:
+Clona el repo desde GitHub (HTTPS o SSH):
 
+- HTTPS:
+```bash
+git clone https://github.com/ab1melek/selectorAutomotriz.git
+cd selectorAutomotriz
 ```
-/src
-  /domain           # Lógica de negocio pura, sin dependencias externas
-  /usecases         # Casos de uso de la aplicación
-  /application      # DTOs y contratos de aplicación
-  /infrastructure   # Implementaciones concretas (repositorios, AI, controllers)
-  /interface        # Puntos de entrada (CLI, HTTP)
+
+- SSH:
+```bash
+git clone git@github.com:ab1melek/selectorAutomotriz.git
+cd selectorAutomotriz
 ```
 
-## 📋 Requisitos
-
-- Node.js >= 18.0.0
-- npm o yarn
-
-## 🚀 Instalación
+## ⚙️ Preparar e instalar dependencias
 
 ```bash
 # Instalar dependencias
 npm install
+
+# Crear .env en la raíz con la clave de Gemini (no subir a Git)
+# .env
+# GEMINI_API_KEY=tu_api_key_aqui
 ```
 
-## 💻 Uso
+Asegúrate de agregar `.env` a `.gitignore`:
+```text
+# filepath: .gitignore
+.env
+node_modules/
+.DS_Store
+```
 
-### CLI (Línea de Comandos)
+## ▶️ Ponerlo en marcha (local)
 
+1. Inicia el servidor en modo desarrollo:
+```bash
+npm run dev
+```
+2. Abre en el navegador:
+http://localhost:3000
+
+3. Prueba la API:
+```bash
+curl -X POST http://localhost:3000/api/recomendaciones \
+  -H "Content-Type: application/json" \
+  -d '{"profesion":"ingeniero","personalidad":"Práctico","hobby":"viajes"}'
+```
+
+## 📦 Uso (resumen rápido)
+
+- CLI:
 ```bash
 node src/interface/cli/index.js "<profesion>" "<personalidad>" "<hobby>"
 ```
 
-### Ejemplos de uso:
+- HTTP API:
+POST /api/recomendaciones
+Body JSON: { "profesion", "personalidad", "hobby" }
 
+La respuesta devolverá 3 recomendaciones con `auto`, `justificacion`, `imagen` (URL).
+
+## 🚀 Despliegue a Vercel (opcional)
+
+1. Instala Vercel CLI (opcional):
 ```bash
-# Ejemplo 1: Ingeniero deportivo
-node src/interface/cli/index.js "ingeniero" "deportivo" "tecnología"
-
-# Ejemplo 2: Profesional familiar
-node src/interface/cli/index.js "doctor" "familiar" "viajes"
-
-# Ejemplo 3: Ejecutivo
-node src/interface/cli/index.js "ejecutivo" "elegante" "negocios"
-
-# Ejemplo 4: Joven urbano
-node src/interface/cli/index.js "estudiante" "urbano" "música"
+npm install -g vercel
 ```
-
-### API REST (Opcional)
-
-Para usar como servidor HTTP, primero crea un archivo `src/interface/http/server.js`:
-
+2. Configura la variable de entorno en Vercel (GEMINI_API_KEY) desde el dashboard del proyecto.
+3. Despliega:
 ```bash
-# Iniciar servidor (después de crear server.js)
-npm run server
+vercel --prod
+```
+O despliegue rápido:
+```bash
+vercel
 ```
 
-Endpoint:
-```
-POST http://localhost:3000/api/recomendaciones
-Content-Type: application/json
+## ✅ Comprobaciones finales
 
-{
-  "profesion": "ingeniero",
-  "personalidad": "deportivo",
-  "hobby": "tecnología"
-}
+- Verifica que `.env` no esté trackeado:
+```bash
+git ls-files | grep -n "\.env" || echo "No está trackeado"
 ```
-
-## 📦 Estructura del Proyecto
-
-```
-selectorAutomotriz/
-├── src/
-│   ├── domain/
-│   │   ├── entities/
-│   │   │   └── Auto.js              # Entidad principal
-│   │   ├── repositories/
-│   │   │   └── AutoRepository.js    # Interfaz del repositorio
-│   │   └── services/
-│   │       └── AutoRecommenderService.js  # Lógica de dominio
-│   ├── usecases/
-│   │   └── RecommendAutosUseCase.js # Caso de uso principal
-│   ├── application/
-│   │   └── DTOs/
-│   │       ├── RecommendAutosRequestDTO.js
-│   │       └── RecommendAutosResponseDTO.js
-│   ├── infrastructure/
-│   │   ├── repositories/
-│   │   │   └── AutosStaticRepository.js  # Datos de autos reales
-│   │   ├── ai/
-│   │   │   └── AiClient.js          # Cliente de IA (Claude Haiku 4.5)
-│   │   └── controllers/
-│   │       └── RecommendAutosController.js
-│   └── interface/
-│       ├── cli/
-│       │   └── index.js             # CLI principal
-│       └── http/
-│           └── routes.js            # Rutas HTTP
-├── package.json
-└── README.md
+- Si `.env` ya fue commiteado:
+```bash
+git rm --cached .env
+git commit -m "Stop tracking .env"
+git push
 ```
 
-## 🎯 Reglas de Negocio
-
-1. ✅ Solo autos modelo **2025**
-2. ✅ Solo autos vendidos oficialmente en **México**
-3. ❌ No se mencionan colores
-4. ❌ No se incluyen autos concepto o prototipos
-5. ✅ Justificación basada en: **profesión + personalidad + hobby**
-6. ✅ Todo en **español**
-
-## 🚗 Autos Disponibles
-
-El sistema incluye autos reales de marcas como:
-- Mazda (CX-50, Mazda3 Turbo, CX-90)
-- Toyota (Camry, Highlander, Corolla Cross)
-- Honda (Civic, CR-V, Accord)
-- Kia (Sportage, K5, Seltos)
-- Hyundai (Tucson, Sonata)
-- Nissan (Kicks, X-Trail)
-- Volkswagen (Jetta, Tiguan)
-- Chevrolet (Blazer, Equinox)
-- BMW (X3, 330i)
-- Mercedes-Benz (GLC, Clase C)
-
-## 🧠 Inteligencia Artificial
-
-El sistema utiliza Claude Haiku 4.5 (simulado) para generar recomendaciones personalizadas que consideran:
-- Perfil profesional
-- Rasgos de personalidad
-- Hobbies y aficiones
-
-## 📄 Salida
-
-El resultado se guarda automáticamente en `resultado_recomendacion.json` con el formato:
-
-```json
-{
-  "exito": true,
-  "perfil": {
-    "profesion": "ingeniero",
-    "personalidad": "deportivo",
-    "hobby": "tecnología"
-  },
-  "recomendaciones": [
-    {
-      "marca": "Mazda",
-      "modelo": "Mazda3 Turbo",
-      "año": 2025,
-      "segmento": "Sedán Deportivo",
-      "precio_aproximado": "$480,000 - $580,000 MXN",
-      "justificacion": "...",
-      "imagen_prompt": "..."
-    }
-  ]
-}
-```
-
-## 🏛️ Principios de Clean Architecture
-
-### Dependencias Unidireccionales
-- **Domain** ← Usecases ← Application ← Infrastructure ← Interface
-- El dominio no depende de nada
-- La infraestructura depende del dominio (inversión de dependencias)
-
-### Capas:
-1. **Domain**: Lógica de negocio pura
-2. **UseCases**: Orquestación de casos de uso
-3. **Application**: DTOs y contratos
-4. **Infrastructure**: Implementaciones concretas
-5. **Interface**: Puntos de entrada (CLI, HTTP)
-
-## 📝 Licencia
-
-ISC
+## ✨ Pie de página
+Hecho por Abimelek Castrezana ❤️
+// ...existing code...
